@@ -1,42 +1,41 @@
-#!/bin/tcsh
+#!/bin/tcsh -f
 #Karolina Gora 1
 
-Help(){
-  #Display help
+set opts =(`getopt -q -s tcsh -o hq -- $argv`)
+set getopt_status=$?
+
+if ($getopt_status == 1) then
+	echo "Unknown option!"
+	goto help;
+endif
+
+foreach opt ($opts)
+	if ($opt == -h) then
+		goto help;
+	endif
+end
+	
+foreach opt ($opts)
+	switch($opt)
+	case -q:
+		exit 0;
+	case --:
+		breaksw;
+	endsw
+end
+
+uinfo:
+  set username=$USER
+  echo $username
+  echo getent passwd $username | awk -F : '{print $5}' | awk -F , '{print $1}'
+
+exit 0
+
+#Display help
+help:
   echo "Description: returns login, name and lastname of current user."
   echo
   echo "Options:"
   echo -e "-h --help\tDisplays help"
   echo -e "-q --quiet\tQuiet mode"
-}
-
-for opt in "$@"
-do
-  case $opt in
-    --help | -h)
-      # echo $1
-      Help
-      exit 0;;
-  esac
-done
-
-while [ ! $# -eq 0 ]
-do
-  case "$1" in
-    --quiet | -q)
-      exit 0;;
-    -*)
-      echo "Error: Invalid option"
-      echo
-      Help
-      exit 1;;
-  esac
-  shift
-done
-
-login=$(whoami)
-name=$(getent passwd $login | awk -F : '{print $5}' | awk -F , '{print $1}')
-
-echo $login
-echo $name
-exit 0
+  exit 1;
