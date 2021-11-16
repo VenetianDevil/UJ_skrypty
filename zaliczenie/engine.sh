@@ -12,6 +12,9 @@ missed="◇"
 hit="◆"
 
 function display_board {
+    # echo -n "feed: " ${feedback[1,1]}
+    # echo -n "boardCheck: " ${board[1,1]}
+    echo
     for y in $(seq 1 $rounds); do
         for x in $(seq 1 $slots); do
             if [[ ${board[$x,$y]} != " " ]] ; then
@@ -22,7 +25,7 @@ function display_board {
         done
         echo -n "| "
         for x in $(seq 1 $slots); do
-            echo -n ${feedback[$x, $y]}" "
+            echo -n ${feedback[$x,$y]}" "
         done
         echo
     done
@@ -42,7 +45,7 @@ function display_game_raw {
     echo -n ":"
     for y in $(seq 1 $rounds); do
         for x in $(seq 1 $slots); do
-            echo -n ${feedback[$x, $y]}","
+            echo -n ${feedback[$x,$y]}","
         done
     done
     echo -n ":"
@@ -88,7 +91,7 @@ function check_try {
     i=1
     for x in $(seq 1 $slots); do 
         if [[ ${try[*]:$x-1:1} == ${code[*]:$x:1} ]]; then
-            feedback[$i, $round]=$hit
+            feedback[$i,$round]=$hit
             hit_indexes[(( i-1 ))]=$x
             (( i=i+1 ))
         fi
@@ -103,7 +106,7 @@ function check_try {
                     if [[ $x != $c && (! " ${hit_indexes[*]} " =~ $c) && (! " ${missed_indexes[*]} " =~ $c) && ${code[*]:$c:1} == ${try[*]:$x-1:1} ]]; then
                         # echo "x " $x "sprawdzam z c = " $c
                         missed_indexes[(( i-1 ))]=$c
-                        feedback[$i, $round]=$missed
+                        feedback[$i,$round]=$missed
                         (( i=i+1 ))
                     fi
                 done
@@ -239,6 +242,7 @@ if [[ "$isb" == true ]] ; then
               feedback[$x,$y]=' '
             else
               feedback[$x,$y]=$char #niby działa ale jak wypisujemy w display to nic nie ma ????????????????
+              # echo -n "feed: x$x y$y" ${feedback[$x,$y]}
             fi
             i=$(($i + 1))
         done

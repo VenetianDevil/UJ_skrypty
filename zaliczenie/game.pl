@@ -81,41 +81,93 @@ sub set_playsers {
 my $board = `$FindBin::RealBin/engine.sh -0`;
 my @board = split(/\n/, $board);
 my $board = @board[0];
-print "game: $board \n";
+# print "game: $board \n";
 
 my $the_game_is_on = 1;
 my $round = 0;
 my $win = 0;
 my($try) = "";
 
+sub print_board {
+  my ($board) = @_;
+  my @boards = split(/:/, $board);
+  my $rounds=@boards[1];
+  my $slots=@boards[2];
+  $board = @boards[3];
+  $board =~ s/,,/,_,/g;
+  $board =~ s/,,/,_,/g;
+  $board =~ s/^,/_,/g;
+  $board =~ s/,$//g;
+  my @board = split(/,/, $board);
+
+  $feedback = @boards[4];
+  $feedback =~ s/,,/,_,/g;
+  $feedback =~ s/,,/,_,/g;
+  $feedback =~ s/^,/_,/g;
+  $feedback =~ s/,$//g;
+  my @feedback = split(/,/, $feedback);
+
+  # print "print board ", @board, "\n";
+  my $blen = $rounds * $slots;
+  for my $i (0..$blen) {  
+    if ( $i > 0 && $i % $slots == 0 ) {
+      print "| ";
+      for my $j ($i-4..$i-1) {
+        print $j, @feedback[$j];
+        print " ";
+      }
+      print "\n"
+    }
+    print $board[$i], " ";
+  }
+  print "\n\n"
+}
+
 while ($round < 10 && $the_game_is_on){
     print "Guess the code: ";
     my $line = readline(STDIN);
     chomp($line);
+
     if(length($line)==4){
       $try = $line;
       $round = $round + 1;
       
-      print "try: ", $try, "\n";
-
-      # my $try = "rrrr";
-      print "102board: ", $board, "\n";
       my $step = `$FindBin::RealBin/engine.sh -t $try $round -b $board`;
-      print "step: ", $step, "\n";
+      # print "step: ", $step, "\n";
       my @step = split(/\n/, $step);
       $board = @step[0];
       my @win = split(/:/, @step[1]);
       $win = @win[1];
 
+      print "125board ", $board, "\n";
+      print_board($board);
+
       if ($win != 0){
         $the_game_is_on = 0;
       }
-
-      print "113board: ", $board, "\n";
-      print "114win: ", $win, "\n\n";
 
     }
     else{
       print "Error: try must have 4 chars"
     }
+}
+
+if ($win == 1){
+  print "
+  __   __         __      ___        _ 
+  \\ \\ / /__ _  _  \\ \\    / (_)_ _   | |
+   \\ V / _ \\ || |  \\ \\/\\/ /| | ' \\  |_|
+    |_|\\___/\\_,_|   \\_/\\_/ |_|_||_| (_)
+                                                 
+";
+}
+
+if ($win == -1){
+  print "
+  __   __          _                  _ 
+  \\ \\ / /__ _  _  | |   ___ ___ ___  | |
+   \\ V / _ \\ || | | |__/ _ (_-</ -_) |_|
+    |_|\\___/\\_,_| |____\\___/__/\\___| (_)
+                                                 
+";
 }
