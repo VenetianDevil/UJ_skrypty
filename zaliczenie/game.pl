@@ -3,6 +3,7 @@
 use FindBin;
 use lib "$FindBin::RealBin";
 use Term::ANSIColor;
+# use DateTime;
 
 my $welcome = "
 			Welcome to the game
@@ -14,7 +15,7 @@ my $welcome = "
 ";
 print $welcome;
 
-my($mode);
+my $scoreboard;
 
 sub help(){
     my $help = "             
@@ -34,9 +35,10 @@ sub help(){
     -------------------------------------------------------
 
     general script usage:
-    $0 [-h]
+    $0 [-h] [-p]
     optional arguments:
         -h, --help          show this help message and exit
+        -s, --scoreboard    show scoreboard
     ";
     print $help, "\n";
 }
@@ -46,11 +48,11 @@ while(scalar @ARGV gt 0){
     if($arg eq "-h" || $arg eq "--help"){
         help();
         exit(0);
-    # }
-    # elsif($arg =~ m/(easy|medium|hard)/){
-    #     if($mode eq ""){
-    #         $mode = $arg;
-    #     }
+    }
+    elsif($arg eq "-s" || $arg eq "--scoreboard"){
+      $scoreboard = `$FindBin::RealBin/records.py -p`;
+      print_scoreboard();
+      exit(0);
     }else{
         print "Error: Unknown argument '", $arg, "'.\n\n";
         help();
@@ -168,6 +170,9 @@ my $the_game_is_on = 1;
 my $win = 0;
 my($try) = "";
 
+# print_code();
+
+$btime = time;
 while ($round < 10 && $the_game_is_on){
   print "Guess the code (r=", colored(["red"], "●"), " y=", colored(["yellow"], "●"), , " b=", colored(["blue"], "●"), " g=", colored(["green"], "●"), " p=", colored(["magenta"], "●"), "):";
   my $try = readline(STDIN);
@@ -193,9 +198,32 @@ while ($round < 10 && $the_game_is_on){
     }
   }
 }
+$etime = time;
 
 print_code();
-# print "win = ", $win;
+
+sub save_score {
+  $elapse = $etime - $btime;
+  print "Write your nick: ";
+  my $nick = readline(STDIN);
+  chomp($nick);
+  $nick =~ s/ /_/g;
+  $scoreboard = `$FindBin::RealBin/records.py -s $nick $round $elapse -p`;
+
+  print_scoreboard();
+}
+
+sub print_scoreboard {
+  @scoreboard = split(/\n/, $scoreboard);
+  foreach (@scoreboard) {
+    my @score = split(/ /, $_);
+    if (@score[-1] eq "new") {
+      print colored(["red"], $_), "\n";
+    } else {
+      print $_, "\n"
+    }
+  }
+}
 
 if ($win == 1){
   print "
@@ -205,6 +233,14 @@ if ($win == 1){
     |_|\\___/\\_,_|   \\_/\\_/ |_|_||_| (_)
                                                  
 ";
+
+  print "Do you want to save your score? (Yes): ";
+  my $save = readline(STDIN);
+
+  if($save eq "Yes" || $save eq "yes" || $save eq "y" || $save eq "Y"){
+    save_score();
+  }
+  
 }
 
 if ($win == -1){
@@ -216,3 +252,5 @@ if ($win == -1){
                                                  
 ";
 }
+
+exit;
