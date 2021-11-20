@@ -97,6 +97,7 @@ function check_try {
         fi
     done
 
+    # sprawdzam jeśli kod nie został odgadnięty 
     if [[ $i != $(( $slots + 1)) ]]; then
         for x in $(seq 1 $slots); do 
             if [[ ! " ${hit_indexes[*]} " =~ $x ]]; then
@@ -108,6 +109,7 @@ function check_try {
                         missed_indexes[(( i-1 ))]=$c
                         feedback[$i,$round]=$missed
                         (( i=i+1 ))
+                        break
                     fi
                 done
             fi
@@ -146,16 +148,15 @@ function game {
 
 Help(){
   #Display help
-  echo "Description: Gives mechanizms for game MasterMind. Launches game.pl."
-	echo "usage: $0 [-h] [-b] [-c] [-t] [-s] [-0]"
+  echo "Description: Contains mechanizms for game MasterMind. Try: perl game.pl."
+	echo "usage: $0 [-h] [-g] [-t] [-0]"
   echo
   echo "Options:"
   echo -e "-h --help\t\t\t\t\t\tDisplays help"
-  echo -e "-b BOARD FEEDBACK, --board BOARD FEEDBACK\t\tSet initial board"
-  echo -e "-c CODE, --code CODE\t\t\t\t\tReturn inital code"
-  echo -e "-t TRY, --try TRY\t\t\t\t\tChecks given combination"
-  echo -e "-s [easy/medium/hard], --start [easy/medium/hard]\tStart with mode"
-  echo -e "-0\t\t\t\t\t\t\tReturn initial board"
+  echo -e "-g GAME, --game GAME FEEDBACK\t\t\t\tSet initial game"
+  echo -e "-t TRY ROUND, --try TRY ROUND\t\t\t\t\tChecks given combination for given round"
+  # echo -e "-s, --start\t\t\t\t\t\tStart the game"
+  echo -e "-0\t\t\t\t\t\t\tReturn initial game"
 }
 
 while (( "$#" )); do
@@ -164,15 +165,10 @@ while (( "$#" )); do
         -h|--help)
             help=1
             ;;
-        -b|--board)
+        -g|--game)
             isb=true
             shift
-            initial_board=$1
-            ;;
-        -c|--code)
-            isc=true
-            shift
-            initial_code=$1
+            initial_game=$1
             ;;
         -t|--try)
             shift
@@ -180,10 +176,10 @@ while (( "$#" )); do
             round=$2
             shift
             ;;
-        -s|--start)
-            shift
-            start=1
-            ;;
+        # -s|--start)
+        #     shift
+        #     start=1
+        #     ;;
         -0)
             is0=true
             ;;
@@ -207,7 +203,7 @@ if [[ "$is0" == true ]] ; then
 fi
 
 if [[ "$isb" == true ]] ; then
-    tmp=($(echo -n $initial_board | tr ':' "\n"))
+    tmp=($(echo -n $initial_game | tr ':' "\n"))
     if [[ "${tmp[0]}" != "board" ]] ; then
         exit 1;
     fi
@@ -215,8 +211,8 @@ if [[ "$isb" == true ]] ; then
     slots=$((${tmp[2]}))
     empty_board
     tmp_board=($(echo -n ${tmp[3]} | sed 's/,,/,_,/g;s/,,/,_,/g;s/^,/_,/g;s/,$//g' | tr ',' "\n"))
-    # echo "temp 3" $initial_board
-    tmp_feedback=($(echo -n ${tmp[4]} | sed 's/,,/,_,/g;s/^,/_,/g;s/,$//g' | tr ',' "\n"))
+    # echo "temp 3" $initial_game
+    tmp_feedback=($(echo -n ${tmp[4]} | sed 's/,,/,_,/g;s/,,/,_,/g;s/^,/_,/g;s/,$//g' | tr ',' "\n"))
     code=($(echo -n \t,${tmp[5]} | tr ',' " "))
     unset 'code[0]'
     # echo "code " ${code[0]}
@@ -259,13 +255,13 @@ if [[ "$try" != "" ]] ; then
   display_game_raw
   if [[ $round -lt $rounds && $win -eq 0  ]] ; then
     echo "win:" 0 #w trakcie
-  elif [[ $round -lt $rounds && $win -eq 1  ]] ; then
+  elif [[ $round -le $rounds && $win -eq 1  ]] ; then
     echo "win:" 1 #wygrana
-  elif [[ $round -eq $rounds && $win -eq 1  ]] ; then
+  elif [[ $round -eq $rounds && $win -eq 0  ]] ; then
     echo "win:" -1 #przefrana
   fi
 
-  display_board
+  # display_board
   
   exit 0
 fi
@@ -275,15 +271,15 @@ if [[ "$is0" == "true" ]] ; then
     exit 0
 fi
 
-if (( start )) ; then
-    echo "Find the code"
-    echo
-    echo "Use first letter of the color to try it in a sequence."
-    echo "Don't use spaces!"
-    echo "Aviable colors:"
-    echo -e "red" "yellow" "blue" "green" "purple"
-    echo 
-    game
-fi
+# if (( start )) ; then
+#     echo "Find the code"
+#     echo
+#     echo "Use first letter of the color to try it in a sequence."
+#     echo "Don't use spaces!"
+#     echo "Aviable colors:"
+#     echo -e "red" "yellow" "blue" "green" "purple"
+#     echo 
+#     game
+# fi
 
 exit 0
