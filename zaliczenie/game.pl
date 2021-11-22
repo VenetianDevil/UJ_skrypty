@@ -1,4 +1,4 @@
-#!usr/bin/perl
+#!/usr/bin/perl
 
 use FindBin;
 use lib "$FindBin::RealBin";
@@ -13,6 +13,13 @@ my $welcome = "
 	|_|  |_\\__,_/__/\\__\\___|_|   |_|  |_|_|_||_\\__,_|
                                                  
 ";
+my $legend = "
+	    
+      Legend:
+      + - hit (you guessed one part correctly)
+      o - miss (you guessed one part correctly, but misplaced it)
+
+";
 print $welcome;
 
 my $scoreboard;
@@ -25,20 +32,24 @@ sub help(){
     a sequence of colors. After each attempt player gets feedback about
     how many parts of the code were decifer correctly and how many were
     misplaced:
-    ◆ - hit (you guessed one part correctly)
-    ◇ - miss (you guessed one part correctly, but misplaced it)
+    + - hit (you guessed one part correctly)
+    o - miss (you guessed one part correctly, but misplaced it)
     There are 5 available colors (red, yellow, blue, green, purple).
     The code consists of 4 colors, selected randomly from the 5 available
     and they can repeat themselves; for example it's possible that 
     the code consists of only red color: {red red red red}.
 
+    After game, if you win and decide to save your score, the game will
+    show you a scoreboard of 10 records in total, marking yours in it.
+    To see full scoreboard run: $0 -s
+
     -------------------------------------------------------
 
     general script usage:
-    $0 [-h] [-p]
+    $0 [-h] [-s]
     optional arguments:
         -h, --help          show this help message and exit
-        -s, --scoreboard    show scoreboard
+        -s, --scoreboard    show full scoreboard
     ";
     print $help, "\n";
 }
@@ -117,7 +128,7 @@ sub print_board {
     elsif( $board[$i] eq "p" ) {$color = "magenta"};
 
     if ($color){
-      print colored([$color], "●"), " ";
+      print colored([$color], "@"), " ";
     } else {
       print $board[$i], " ";
     }
@@ -129,7 +140,7 @@ sub print_code {
   my @code = split(/,/, $code);
 
   my $color = "";
-  print "Kod to ";
+  print "Code: ";
   foreach (@code){
     if( $_ eq "r" ) {$color = "red"}
     elsif ( $_ eq "y" ) {$color = "yellow"}
@@ -137,9 +148,10 @@ sub print_code {
     elsif( $_ eq "g" ) {$color = "green"}
     elsif( $_ eq "p" ) {$color = "magenta"};
 
-    print colored([$color], "●"), " ";
+    print colored([$color], "@"), " ";
 
-  } 
+  }
+  print "\n"
 }
 
 sub is_try_valid {
@@ -171,10 +183,12 @@ my $win = 0;
 my($try) = "";
 
 # print_code();
+print $legend;
+print_board($game);
 
 $btime = time;
 while ($round < 10 && $the_game_is_on){
-  print "Guess the code (r=", colored(["red"], "●"), " y=", colored(["yellow"], "●"), , " b=", colored(["blue"], "●"), " g=", colored(["green"], "●"), " p=", colored(["magenta"], "●"), "):";
+  print "Guess the code (r=", colored(["red"], "@"), " y=", colored(["yellow"], "@"), , " b=", colored(["blue"], "@"), " g=", colored(["green"], "@"), " p=", colored(["magenta"], "@"), "):";
   my $try = readline(STDIN);
   chomp($try);
 
@@ -199,11 +213,11 @@ while ($round < 10 && $the_game_is_on){
   }
 }
 $etime = time;
+$elapse = $etime - $btime;
 
 print_code();
 
 sub save_score {
-  $elapse = $etime - $btime;
   print "Write your nick: ";
   my $nick = readline(STDIN);
   chomp($nick);
@@ -226,6 +240,9 @@ sub print_scoreboard {
 }
 
 if ($win == 1){
+  print "Rounds: ", $round, "\n";
+  print "Time: ", $elapse, "s\n";
+
   print "
   __   __         __      ___        _ 
   \\ \\ / /__ _  _  \\ \\    / (_)_ _   | |
@@ -236,7 +253,7 @@ if ($win == 1){
 
   print "Do you want to save your score? (Yes): ";
   my $save = readline(STDIN);
-
+  chomp($save);
   if($save eq "Yes" || $save eq "yes" || $save eq "y" || $save eq "Y"){
     save_score();
   }

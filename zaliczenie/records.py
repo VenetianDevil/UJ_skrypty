@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import argparse
 # from colorama import init, Fore, Back, Style
@@ -74,8 +74,6 @@ def print_scoreboard(max):
       line.append('')
       print("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*["-", "-", "-", "-", ""]))
       print("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*line))
-
-
 
 result = vars(args)['result']
 if(result):

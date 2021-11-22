@@ -1,3 +1,11 @@
 Kami 5 22 
 Kami 7 38 
 Kami 9 126 
+Kami 9 43 
+Kami 7 26 
+Kami 9 55 
+Kami 6 40 
+Bob 6 50 
+Cosiek 9 32 
+Mati 9 56 
+Cześ 8 35 

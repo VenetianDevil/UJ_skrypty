@@ -8,8 +8,8 @@ declare -a colors=("r" "y" "b" "g" "p") #"red" "yellow" "blue" "green" "purple"
 rounds=10
 slots=4
 
-missed="◇"
-hit="◆"
+missed="o"
+hit="+"
 
 function display_board {
     # echo -n "feed: " ${feedback[1,1]}
