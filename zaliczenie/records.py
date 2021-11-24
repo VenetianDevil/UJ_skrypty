@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-# from colorama import init, Fore, Back, Style
-# init(autoreset=True)
-from termcolor import colored
 
 parser = argparse.ArgumentParser(description='Addition to perl game.pl. Updates and\or prints scoreboard.')
 parser.add_argument('-s', '--save', dest='result', action='store', nargs="+", help='Save given result: nick score time')
@@ -60,14 +57,14 @@ def print_scoreboard(max):
       line = lines[i]
       if(line[-1] == "new"):
         # print(Fore.RED + "{: >20} {: >20} {: >20} {: >20} {: >20}".format(*line))
-        print(colored("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*line), 'red'))
+        print("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*line))
       else:
         line.append('')
         print("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*line))
     
     if(max < count and new_result[0] > max):
       print("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*["-", "-", "-", "-", ""]))
-      print(colored("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*new_result), 'red'))
+      print("{: >20} {: >20} {: >20} {: >20} {: >20}".format(*new_result))
 
     if(max < count and new_result[0] != count ):
       line = lines[-1]

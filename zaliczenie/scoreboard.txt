@@ -8,4 +8,7 @@ Kami 6 40
 Bob 6 50 
 Cosiek 9 32 
 Mati 9 56 
-Cześ 8 35 
+My 7 24 
+Kami 7 34 
+Kami 9 62 
+Kami 9 42 

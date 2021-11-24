@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
 use FindBin;
-use lib "$FindBin::RealBin";
 use Term::ANSIColor;
-# use DateTime;
+use lib "$FindBin::RealBin";
+use Board;
 
 my $welcome = "
 			Welcome to the game
@@ -89,52 +89,7 @@ my $rounds=@data[1];
 my $slots=@data[2];
 my $code = @data[5];
 
-sub print_board {
-  my ($game) = @_;
-  my @data = split(/:/, $game);
-  $board = @data[3];
-  $board =~ s/,,/,_,/g;
-  $board =~ s/,,/,_,/g;
-  $board =~ s/^,/_,/g;
-  $board =~ s/,$//g;
-  my @board = split(/,/, $board);
-
-  $feedback = @data[4];
-  $feedback =~ s/,,/, ,/g;
-  $feedback =~ s/,,/, ,/g;
-  $feedback =~ s/^,/ ,/g;
-  $feedback =~ s/,$//g;
-  my @feedback = split(/,/, $feedback);
-
-  # print "print board ", @board, "\n";
-  my $blen = $rounds * $slots;
-  print "\n";
-  for my $i (0..$blen) {  
-    if ( $i > 0 && $i % $slots == 0 ) {
-      print "| ";
-      for my $j ($i-4..$i-1) {
-        # print $j, @feedback[$j];
-        print @feedback[$j];
-        print " ";
-      }
-      print "\n";
-    }
-
-    my $color = "";
-    if( $board[$i] eq "r" ) {$color = "red"}
-    elsif ( $board[$i] eq "y" ) {$color = "yellow"}
-    elsif( $board[$i] eq "b" ) {$color = "blue"}
-    elsif( $board[$i] eq "g" ) {$color = "green"}
-    elsif( $board[$i] eq "p" ) {$color = "magenta"};
-
-    if ($color){
-      print colored([$color], "@"), " ";
-    } else {
-      print $board[$i], " ";
-    }
-  }
-  print "\n\n"
-}
+my $board = new Board($rounds, $slots);
 
 sub print_code {
   my @code = split(/,/, $code);
@@ -184,7 +139,7 @@ my($try) = "";
 
 # print_code();
 print $legend;
-print_board($game);
+$board->print_board($game);
 
 $btime = time;
 while ($round < 10 && $the_game_is_on){
@@ -206,7 +161,7 @@ while ($round < 10 && $the_game_is_on){
     # print "156 \$board ", $board, "\n";
     # print "157 display ", $step, "\n";
 
-    print_board($game);
+    $board->print_board($game);
     if ($win != 0){
       $the_game_is_on = 0;
     }
